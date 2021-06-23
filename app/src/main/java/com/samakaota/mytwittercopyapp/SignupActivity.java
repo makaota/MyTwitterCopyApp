@@ -6,17 +6,26 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
+import java.util.List;
+
 public class SignupActivity extends AppCompatActivity {
 
-    private Button btnSave;
+    private Button btnSave, btnGetAllData;
     private EditText edtName, edtPunchSpeed, edtPunchPower, edtKickSpeed, edtKickPower;
+    private TextView txtGetData, txtShowAllKickBoxers;
+
+    private String allKickBoxers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +38,62 @@ public class SignupActivity extends AppCompatActivity {
         edtKickPower = findViewById(R.id.edtKickPower);
         edtPunchPower = findViewById(R.id.edtPunchPower);
         edtKickSpeed = findViewById(R.id.edtKickSpeed);
+        txtGetData = findViewById(R.id.txtGetData);
+        btnGetAllData = findViewById(R.id.btnGetAllKickBoxer);
+        txtShowAllKickBoxers = findViewById(R.id.txtShowAllKickBoxers);
+        allKickBoxers = "";
+
+        btnGetAllData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseQuery<ParseObject> queryAll = ParseQuery.getQuery("KickBoxer");
+                queryAll.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        if (e == null){
+                            if (objects.size() > 0){
+                                for (ParseObject kickBoxer : objects) {
+                                    allKickBoxers = allKickBoxers + kickBoxer.get("name") + "\n";
+                                }
+                               /* FancyToast.makeText(SignupActivity.this,
+                                        "successfully so!!!!",
+                                        FancyToast.LENGTH_LONG,
+                                        FancyToast.SUCCESS,
+                                        true).show();*/
+                                txtShowAllKickBoxers.setText(allKickBoxers);
+
+
+                            }
+                            else {
+
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        txtGetData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("KickBoxer");
+                parseQuery.getInBackground("Nd9VnPVVnc", new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject object, ParseException e) {
+                        if (object != null && e == null){
+                            txtGetData.setText(object.get("name")+ "-" +"Punch Power: " + object.get("punchPower"));
+                        }else {
+
+                            FancyToast.makeText(SignupActivity.this,
+                                    e.getMessage()+"Error!!!",
+                                    FancyToast.LENGTH_LONG,
+                                    FancyToast.ERROR,
+                                    true).show();
+                        }
+                    }
+                });
+            }
+        });
 
         btnSave = findViewById(R.id.btnSave);
         btnSave.setOnClickListener(new View.OnClickListener() {
