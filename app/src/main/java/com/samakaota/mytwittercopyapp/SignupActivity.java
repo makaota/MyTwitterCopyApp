@@ -21,7 +21,7 @@ import java.util.List;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private Button btnSave, btnGetAllData;
+    private Button btnSave, btnGetAllData, btnTransition;
     private EditText edtName, edtPunchSpeed, edtPunchPower, edtKickSpeed, edtKickPower;
     private TextView txtGetData, txtShowAllKickBoxers;
 
@@ -41,12 +41,14 @@ public class SignupActivity extends AppCompatActivity {
         txtGetData = findViewById(R.id.txtGetData);
         btnGetAllData = findViewById(R.id.btnGetAllKickBoxer);
         txtShowAllKickBoxers = findViewById(R.id.txtShowAllKickBoxers);
+
         allKickBoxers = "";
 
         btnGetAllData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ParseQuery<ParseObject> queryAll = ParseQuery.getQuery("KickBoxer");
+                queryAll.whereGreaterThan("punchPower",3000);
                 queryAll.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
@@ -134,6 +136,14 @@ public class SignupActivity extends AppCompatActivity {
                           FancyToast.ERROR,
                           true).show();
               }
+            }
+        });
+
+        btnTransition = findViewById(R.id.btnNextActivity);
+        btnTransition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
